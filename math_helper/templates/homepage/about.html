@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Math Helper — о проекте{% endblock %}
+
+{% block content %}
+<div class="container">
+  <article class="card border-subtle rounded-0">
+    <div class="row g-0">
+      <div class="col-auto border-start border-5 border-subtle-warning" aria-hidden="true"></div>
+      <div class="col">
+        <div class="card-body p-6 md:p-11">
+      <p class="small text-uppercase fw-bold bg-subtle-warning theme-warning d-inline-block px-2 py-1 mb-3">О проекте</p>
+      <h1 class="h2 fw-normal">Math Helper — алгебра в понятной последовательности</h1>
+      <p class="text-md opacity-75">
+        Пособие по алгебре помогает систематизировать школьную математику:
+        от натуральных и целых чисел к операциям и новым числовым множествам.
+        Материалы курса можно читать и проходить по шагам.
+      </p>
+
+      <div class="row row-cols-1 md:row-cols-2 g-3 my-4" aria-label="Состав курса">
+        <div class="col">
+          <div class="card bg-1 border-0 rounded-0 h-100">
+            <div class="card-body">
+              <strong class="h3 d-block">{{ lesson_count }}</strong>
+              <span class="small opacity-75">уроков</span>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card bg-1 border-0 rounded-0 h-100">
+            <div class="card-body">
+              <strong class="h3 d-block">{{ step_count }}</strong>
+              <span class="small opacity-75">шагов курса</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="h4 mt-4">Что вы найдёте в курсе</h2>
+      <ul class="list-group list-group-flush mb-4">
+        <li class="list-group-item px-0">Объяснения и примеры по основным темам школьной алгебры.</li>
+        <li class="list-group-item px-0">Формулы и математические записи, встроенные в материал уроков.</li>
+        <li class="list-group-item px-0">Практические задания с проверкой там, где ответ однозначен.</li>
+      </ul>
+
+      <a class="btn btn-subtle theme-warning border border-subtle-warning" href="{% url 'course_management:course_index' %}">
+        Перейти к программе <span aria-hidden="true">›</span>
+      </a>
+        </div>
+      </div>
+    </div>
+  </article>
+</div>
+{% endblock %}

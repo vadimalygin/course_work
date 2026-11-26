@@ -1,0 +1,11 @@
+{% load static %}
+<nav class="navbar bg-inverse theme-inverse theme-contrast">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'homepage:homepage' %}">Math Helper</a>
+    <ul class="navbar-nav flex-row ms-auto gap-2">
+      <li><a class="nav-link active theme-warning" href="{% url 'homepage:homepage' %}">Homepage</a></li>
+      <li><a class="nav-link" href="{% url 'courses' %}">Courses</a></li>
+      <li><a class="nav-link" href="{% url 'homepage:about' %}">About</a></li>
+    </ul>
+  </div>
+</nav>

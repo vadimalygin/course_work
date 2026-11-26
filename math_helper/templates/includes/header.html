@@ -1,0 +1,12 @@
+<header class="navbar sticky-top bg-inverse theme-inverse theme-contrast">
+  <div class="container-fluid flex-nowrap gap-3 px-3 md:px-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'homepage:homepage' %}">
+      <span class="d-inline-flex align-items-center justify-content-center border border-2 rounded-circle px-2 py-1" aria-hidden="true">∑</span>
+      <span>math helper</span>
+    </a>
+    <nav class="navbar-nav flex-row gap-2" aria-label="Основная навигация">
+      <a class="nav-link" href="{% url 'course_management:course_index' %}">Каталог</a>
+    </nav>
+    <a class="nav-link ms-auto" href="{% url 'homepage:homepage' %}">На главную</a>
+  </div>
+</header>

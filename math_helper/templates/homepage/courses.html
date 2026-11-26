@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Math Helper — каталог курсов{% endblock %}
+
+
+
+{% block content %}
+<div class="container">
+  <header class="mb-4">
+    <p class="small text-uppercase fw-bold bg-subtle-warning theme-warning d-inline-block px-2 py-1 mb-3">Math Helper · каталог</p>
+    <h1 class="h1 fw-normal">Курсы обучения</h1>
+    <p class="text-md opacity-75 mb-0">Выберите курс и продолжайте изучать математику в удобном темпе.</p>
+  </header>
+
+  {% for course in courses %}
+  <article class="card border-subtle rounded-0 mb-3">
+    <div class="row g-0">
+      <div class="col-auto border-start border-5 border-subtle-warning" aria-hidden="true"></div>
+      <div class="col">
+        <div class="card-body p-6 md:p-10">
+          <div class="row g-4 align-items-center">
+        <div class="col-12 lg:col-8">
+          <span class="badge bg-subtle-warning theme-warning mb-2">{{ course.level }}</span>
+          <h2 class="h3">{{ course.title }}</h2>
+          <p class="opacity-75">{{ course.description }}</p>
+          <a class="btn btn-subtle theme-warning border border-subtle-warning" href="{% url 'course_management:course_index' %}">
+            Открыть программу <span aria-hidden="true">›</span>
+          </a>
+        </div>
+        <aside class="col-12 lg:col-4" aria-label="Состав курса">
+          <div class="card bg-1 border-0 rounded-0">
+            <div class="card-body">
+              <div class="mb-3">
+                <strong class="h3 d-block mb-0">{{ course.lesson_count }}</strong>
+                <span class="small opacity-75">уроков</span>
+              </div>
+              <div class="border-top pt-3">
+                <strong class="h3 d-block mb-0">{{ course.step_count }}</strong>
+                <span class="small opacity-75">учебных шагов</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+  {% empty %}
+  <p class="card card-body bg-white">Курсы пока не добавлены.</p>
+  {% endfor %}
+</div>
+{% endblock %}
