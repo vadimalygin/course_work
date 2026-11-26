@@ -1,0 +1,49 @@
+{
+    "block":{
+        "name":"fill-blanks",
+        "text":"<p>Что общего для этих изображений?</p>\n\n<p><img alt=\"\" height=\"281\" name=\"image.png\" src=\"/static/course_management/images/image-c0282b5b49f9.png\" width=\"477\"><img alt=\"\" height=\"335\" name=\"image.png\" src=\"/static/course_management/images/image-368b76009157.png\" width=\"292\"></p>",
+        "video":null,
+        "options":{},
+        "subtitle_files":[],
+        "is_deprecated":false,
+        "source":{
+            "components":[
+                {
+                    "type":"text",
+                    "text":"","options":[]
+                },
+                {
+                    "type":"input",
+                    "text":"","options":[
+                        {
+                            "text":"3",
+                            "is_correct":true
+                        },
+                        {
+                            "text":"число три",
+                            "is_correct":true
+                        },
+                        {
+                            "text":"число 3",
+                            "is_correct":true
+                        },
+                        {
+                            "text":"три",
+                            "is_correct":true
+                        }
+                    ]
+                }
+            ],
+            "is_case_sensitive":false,
+            "is_detailed_feedback":false,
+            "is_partially_correct":false
+        },
+        "subtitles":{},
+        "tests_archive":null,
+        "feedback_correct":"",
+        "feedback_wrong":""
+    },
+    "id":"7152218",
+    "has_review":false,
+    "time":"2026-11-21T14:52:28.825Z"
+}
