@@ -1,0 +1,224 @@
+{% extends "course_management/course_base.html" %}
+{% load static %}
+
+{% block title %}{{ lesson.title }} — шаг {{ step.position }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],
+      processEscapes: true
+    },
+    options: {
+      processHtmlClass: 'mathjax_process'
+    }
+  };
+</script>
+<script defer src="{% static 'course_management/mathjax/tex-chtml.js' %}"></script>
+<script defer src="{% static 'course_management/number_line.js' %}?v=5"></script>
+<script defer src="{% static 'course_management/fraction_pie.js' %}?v=2"></script>
+{% if step.type == "matching" or step.type == "sorting" %}
+<script defer src="{% static 'course_management/drag_order.js' %}?v=2"></script>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row g-0 h-100">
+  <aside class="col-12 lg:col-3 bg-inverse theme-inverse theme-contrast py-3">
+    <a class="navbar-brand d-block px-3" href="{% url 'course_management:course_index' %}">
+      {{ course_title }}
+    </a>
+    <div class="small fw-bold px-3 py-2 border-top border-subtle">1 Отдел 1. Количество</div>
+    <ul class="nav flex-column p-2">
+      {% for item in lessons %}
+      <li class="w-100">
+        <a
+          class="nav-link justify-content-start text-start{% if item.number == lesson.number %} active theme-warning{% endif %}"
+          href="{% url 'course_management:lesson_detail' item.number %}"
+          {% if item.number == lesson.number %}aria-current="page"{% endif %}
+        >
+          <span class="small opacity-75 me-2">1.{{ item.number }}</span>
+          <span class="text-wrap text-break">{{ item.title }}</span>
+        </a>
+        {% if item.number == lesson.number %}
+        <ul class="nav flex-column ms-3 border-start border-subtle">
+          {% for item_step in lesson.steps %}
+          <li class="w-100">
+            <a
+              class="nav-link small justify-content-start text-start{% if item_step.position == step.position %} active theme-warning{% endif %}"
+              href="{% url 'course_management:step_detail' lesson.number item_step.position %}"
+              {% if item_step.position == step.position %}aria-current="step"{% endif %}
+            >
+              Шаг {{ item_step.position }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </aside>
+
+  <div class="col-12 lg:col-9 bg-white mathjax_process">
+    <div class="d-flex align-items-center justify-content-between gap-3 border-bottom px-3 py-3 md:px-4 small">
+      <span>1.{{ lesson.number }} {{ lesson.title }}</span>
+      <span class="small opacity-75">
+        шаг {{ step.position }} из {{ lesson.steps|length }}
+      </span>
+    </div>
+    <div class="progress rounded-0" role="progressbar" aria-label="Прогресс урока" aria-valuenow="{{ progress_percent }}" aria-valuemin="0" aria-valuemax="100">
+      <div class="progress-bar bg-muted-warning" style="width: {{ progress_percent }}%"></div>
+    </div>
+
+    <div class="container py-4 px-3 md:px-4">
+      <div class="d-flex align-items-baseline justify-content-between flex-wrap gap-2 mb-4">
+        <h1 class="h4 fw-normal mb-0">Шаг {{ step.position }} из {{ lesson.steps|length }}</h1>
+        <a class="btn btn-text btn-sm theme-secondary" href="{% url 'course_management:lesson_detail' lesson.number %}">Содержание урока</a>
+      </div>
+
+      <div
+        class="course-step-content text-sm lh-lg mb-4"
+        data-course-lesson="{{ lesson.number }}"
+        data-course-step="{{ step.position }}"
+      >{{ step.content|safe }}</div>
+
+      {% if step.type == "random-tasks" and random_task_prompt %}
+      <p class="course-step-content text-sm lh-lg mb-4">{{ random_task_prompt|linebreaksbr }}</p>
+      {% endif %}
+
+      {% if step.type != "text" %}
+      <form method="post" class="card border-5 border-subtle-warning rounded-4 p-3 md:p-4 my-4">
+        {% csrf_token %}
+        {% if step.type == "choice" %}
+          <h2 class="h6 fw-semibold mb-3">
+            {% if step.source.is_multiple_choice %}Выберите все подходящие варианты{% else %}Выберите один вариант из списка{% endif %}
+          </h2>
+        {% elif step.type == "fill-blanks" %}
+          <h2 class="h6 fw-semibold mb-3">Заполните пропуски</h2>
+        {% elif step.type == "matching" %}
+          <h2 class="h6 fw-semibold mb-3">Установите соответствие</h2>
+        {% elif step.type == "sorting" %}
+          <h2 class="h6 fw-semibold mb-3">Расставьте элементы в правильном порядке</h2>
+        {% elif step.type == "math" or step.type == "number" %}
+          <h2 class="h6 fw-semibold mb-3">Введите ответ</h2>
+        {% else %}
+          <h2 class="h6 fw-semibold mb-3">Ваш ответ</h2>
+        {% endif %}
+
+        {% if submission_message %}
+        <div class="border rounded p-3 mb-3 {% if submission_correct %}bg-subtle-success border-success {% elif submission_correct == False %}bg-subtle-warning border-warning {% else %}bg-2{% endif %}" role="status">
+          {{ submission_message|linebreaksbr }}
+        </div>
+        {% endif %}
+
+        {% if step.type == "choice" %}
+        <div class="d-grid gap-2 p-3 bg-1 border rounded">
+          {% for option in step.source.options %}
+          <label class="d-flex align-items-center gap-2 mb-0">
+            {% if step.source.is_multiple_choice %}
+            <input class="check" type="checkbox" name="answers" value="{{ forloop.counter0 }}">
+            {% else %}
+            <input class="radio" type="radio" name="answer" value="{{ forloop.counter0 }}" required>
+            {% endif %}
+            <span>{{ option.text }}</span>
+          </label>
+          {% endfor %}
+        </div>
+        {% elif step.type == "fill-blanks" %}
+        <div class="bg-1 border rounded p-3 lh-lg">
+          {% for component in step.source.components %}
+            {% if component.type == "text" %}
+            <span>{{ component.text|safe }}</span>
+            {% elif component.type == "input" %}
+            <input
+              class="form-control form-control-sm d-inline-block w-auto align-baseline"
+              type="text"
+              name="answers"
+              aria-label="Ответ {{ forloop.counter }}"
+              required
+            >
+            {% endif %}
+          {% endfor %}
+        </div>
+        {% elif step.type == "matching" %}
+                  <p class="small opacity-75">Перетащите значения справа, чтобы сопоставить их со значениями слева.</p>
+                  <div class="row g-3">
+                    <ol class="col-12 md:col-6 list-unstyled d-grid gap-2 mb-0" aria-label="Значения для сопоставления">
+                      {% for pair in step.source.pairs %}
+                      <li class="border rounded p-2 bg-1">{{ pair.first }}</li>
+                      {% endfor %}
+                    </ol>
+                    <ol class="col-12 md:col-6 list-unstyled d-grid gap-2 mb-0" data-sortable-list aria-label="Перемещаемые значения">
+                      {% for option in matching_options %}
+                      <li class="d-flex align-items-center gap-2 border rounded p-2 bg-white text-start" data-sortable-item>
+                        <span class="opacity-75 user-select-none" data-sortable-handle style="touch-action: none; cursor: grab;" aria-hidden="true">⠿</span>
+                        <span class="flex-grow-1 text-break">{{ option.value }}</span>
+                        <span class="d-inline-flex gap-1">
+                          <button class="btn btn-sm btn-subtle theme-secondary" type="button" data-move="up" aria-label="Переместить вверх">↑</button>
+                          <button class="btn btn-sm btn-subtle theme-secondary" type="button" data-move="down" aria-label="Переместить вниз">↓</button>
+                        </span>
+                        <input type="hidden" name="answers" value="{{ option.value }}">
+                      </li>
+                      {% endfor %}
+                    </ol>
+                  </div>
+        {% elif step.type == "sorting" %}
+                  <p class="small opacity-75">Перетащите элементы в нужном порядке или используйте стрелки.</p>
+                  <ol class="list-unstyled d-grid gap-2 mb-0" data-sortable-list aria-label="Элементы для сортировки">
+                    {% for option in sorting_options %}
+                    <li class="d-flex align-items-center gap-2 border rounded p-2 bg-white text-start" data-sortable-item>
+                      <span class="opacity-75 user-select-none" data-sortable-handle style="touch-action: none; cursor: grab;" aria-hidden="true">⠿</span>
+                      <span class="flex-grow-1 text-break">{{ option.value }}</span>
+                      <span class="d-inline-flex gap-1">
+                        <button class="btn btn-sm btn-subtle theme-secondary" type="button" data-move="up" aria-label="Переместить вверх">↑</button>
+                        <button class="btn btn-sm btn-subtle theme-secondary" type="button" data-move="down" aria-label="Переместить вниз">↓</button>
+                      </span>
+                      <input type="hidden" name="answers" value="{{ option.value }}">
+                    </li>
+                    {% endfor %}
+                  </ol>
+        {% elif step.type == "math" or step.type == "number" %}
+        <div class="mb-3">
+          <label class="form-label" for="step-answer">Ваш ответ</label>
+          <input class="form-control" id="step-answer" type="text" name="answer" value="{{ submitted_answer }}" required>
+        </div>
+        {% else %}
+          {% if step.type == "free-answer" or step.type == "string" or step.type == "random-tasks" %}
+          <p>Этот шаг не проверяется автоматически.</p>
+          {% else %}
+          <p>Для этого типа шага автоматическая проверка не настроена.</p>
+          {% endif %}
+        <div class="mb-3">
+          <label class="form-label" for="step-answer">Ваш ответ</label>
+          <textarea class="form-control" id="step-answer" name="answer" rows="4" required>{{ submitted_answer }}</textarea>
+        </div>
+        {% endif %}
+
+        <button class="btn btn-subtle theme-warning border border-subtle-warning mt-3" type="submit">Проверить ответ</button>
+      </form>
+      {% endif %}
+
+      <nav class="d-flex align-items-center justify-content-between gap-3 border-top bg-1 p-3 md:p-4 mt-4" aria-label="Навигация по шагам">
+        {% if previous_step %}
+        <a class="btn btn-text theme-secondary text-wrap" href="{% url 'course_management:step_detail' previous_step.0 previous_step.1 %}">← Предыдущий шаг</a>
+        {% else %}
+        <a class="btn btn-text theme-secondary text-wrap" href="{% url 'course_management:course_index' %}">← Программа курса</a>
+        {% endif %}
+        {% if next_step %}
+        <a class="btn btn-subtle theme-warning border border-subtle-warning" href="{% url 'course_management:step_detail' next_step.0 next_step.1 %}">
+          Следующий шаг <span aria-hidden="true">›</span>
+        </a>
+        {% else %}
+        <a class="btn btn-subtle theme-warning border border-subtle-warning" href="{% url 'course_management:course_index' %}">
+          К программе курса <span aria-hidden="true">›</span>
+        </a>
+        {% endif %}
+      </nav>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block main_class %}px-0 py-0{% endblock %}
+
+{% block site_header %}
+<header class="navbar sticky-top bg-inverse theme-inverse theme-contrast">
+  <div class="container-fluid flex-nowrap gap-3 px-3 md:px-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'course_management:course_index' %}">
+      <span class="d-inline-flex align-items-center justify-content-center border border-2 rounded-circle px-2 py-1" aria-hidden="true">∑</span>
+      <span>math helper</span>
+    </a>
+    <a class="nav-link ms-auto" href="{% url 'homepage:homepage' %}">На главную</a>
+  </div>
+</header>
+{% endblock %}
+
+{% block site_footer %}{% endblock %}
+
+

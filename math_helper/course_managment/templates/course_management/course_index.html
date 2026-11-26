@@ -1,0 +1,50 @@
+{% extends "course_management/course_base.html" %}
+
+{% block title %}{{ course_title }} — программа курса{% endblock %}
+
+{% block content %}
+<div class="row g-0 h-100">
+  <aside class="col-12 lg:col-3 bg-white border-end p-3 md:p-4">
+    <div class="d-inline-flex align-items-center justify-content-center bg-subtle-warning theme-warning rounded-2 text-2xl fw-bold p-2 mb-3" aria-hidden="true">∑</div>
+    <h2 class="h5">{{ course_title }}</h2>
+    <span class="badge bg-subtle-info theme-info mb-4">БАЗОВЫЙ УРОВЕНЬ</span>
+    <nav class="nav flex-column gap-1" aria-label="Разделы курса">
+      <a class="nav-link" href="{% url 'course_management:course_index' %}">Курс</a>
+      <a class="nav-link active theme-warning" href="#curriculum">Содержание</a>
+    </nav>
+    <div class="border-top pt-3 mt-4 small opacity-75 lh-lg">
+      <div>{{ lessons|length }} уроков</div>
+      <div>{{ step_count }} учебных шагов</div>
+      <div>Алгебра · самообучение</div>
+    </div>
+  </aside>
+
+  <div class="col-12 lg:col-9 p-3 md:p-5" id="curriculum">
+    <h1 class="h3 fw-normal mb-2">Программа курса</h1>
+    <p class="opacity-75 mb-4">Изучайте темы последовательно или выберите нужный урок.</p>
+
+    <section class="card border-subtle rounded-0">
+      <div class="row g-0">
+        <div class="col-auto border-start border-5 border-subtle-warning" aria-hidden="true"></div>
+        <div class="col">
+          <header class="card-header bg-white p-3">
+            <h2 class="h5 mb-2">1. Отдел 1. Количество</h2>
+            <p class="mb-0 opacity-75">Модель числовых множеств и операций над ними</p>
+          </header>
+          <ol class="list-group list-group-flush">
+        {% for lesson in lessons %}
+        <li class="list-group-item p-0">
+          <a class="btn btn-text btn-sm text-body w-100 d-flex justify-content-start align-items-center gap-3 p-3" href="{% url 'course_management:lesson_detail' lesson.number %}">
+            <span class="badge rounded-circle bg-2">{{ forloop.counter }}</span>
+            <span class="flex-grow-1">1.{{ forloop.counter }} {{ lesson.title }}</span>
+            <span class="small opacity-75 text-nowrap">{{ lesson.steps|length }} шаг{{ lesson.steps|length|pluralize:",а,ов" }} →</span>
+          </a>
+        </li>
+        {% endfor %}
+          </ol>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

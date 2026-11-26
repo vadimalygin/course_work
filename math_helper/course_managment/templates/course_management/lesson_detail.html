@@ -1,0 +1,80 @@
+{% extends "course_management/course_base.html" %}
+
+{% block title %}{{ lesson.title }} — {{ course_title }}{% endblock %}
+
+{% block content %}
+<div class="row g-0 h-100">
+  <aside class="col-12 lg:col-3 bg-inverse theme-inverse theme-contrast py-3">
+    <a class="navbar-brand d-block px-3" href="{% url 'course_management:course_index' %}">
+      {{ course_title }}
+    </a>
+    <div class="small fw-bold px-3 py-2 border-top border-subtle">1 Отдел 1. Количество</div>
+    <ul class="nav flex-column p-2">
+      {% for item in lessons %}
+      <li class="w-100">
+        <a
+          class="nav-link justify-content-start text-start{% if item.number == lesson.number %} active theme-warning{% endif %}"
+          href="{% url 'course_management:lesson_detail' item.number %}"
+          {% if item.number == lesson.number %}aria-current="page"{% endif %}
+        >
+          <span class="small opacity-75 me-2">1.{{ item.number }}</span>
+          <span class="text-wrap text-break">{{ item.title }}</span>
+        </a>
+        {% if item.number == lesson.number %}
+        <ul class="nav flex-column ms-3 border-start border-subtle">
+          {% for step in lesson.steps %}
+          <li class="w-100">
+            <a class="nav-link small justify-content-start text-start" href="{% url 'course_management:step_detail' lesson.number step.position %}">
+              Шаг {{ forloop.counter }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </aside>
+
+  <div class="col-12 lg:col-9 bg-white">
+    <div class="d-flex align-items-center justify-content-between gap-3 border-bottom px-3 py-3 md:px-4 small">
+      <span>{{ lesson.title }}</span>
+      <span class="small opacity-75">{{ lesson.steps|length }} шагов</span>
+    </div>
+    <div class="container py-4 px-3 md:px-4">
+      <div class="d-flex align-items-baseline justify-content-between flex-wrap gap-2 mb-4">
+        <h1 class="h4 fw-normal mb-0">Содержание урока {{ lesson.number }}</h1>
+        <a class="btn btn-text btn-sm theme-secondary" href="{% url 'course_management:course_index' %}">Программа курса</a>
+      </div>
+
+      <section class="card border-subtle rounded-0">
+        <div class="row g-0">
+          <div class="col-auto border-start border-5 border-subtle-warning" aria-hidden="true"></div>
+          <div class="col">
+            <header class="card-header bg-white p-3">
+              <h2 class="h5 mb-2">1.{{ lesson.number }} {{ lesson.title }}</h2>
+              <p class="mb-0 opacity-75">Выберите шаг, чтобы продолжить обучение</p>
+            </header>
+            <ol class="list-group list-group-flush">
+          {% for step in lesson.steps %}
+          <li class="list-group-item p-0">
+            <a class="btn btn-text btn-sm text-body w-100 d-flex justify-content-start align-items-center gap-3 p-3" href="{% url 'course_management:step_detail' lesson.number step.position %}">
+              <span class="badge rounded-circle bg-2">{{ forloop.counter }}</span>
+              <span class="flex-grow-1">Шаг {{ forloop.counter }}</span>
+              <span class="small opacity-75 text-nowrap">{{ step.type|capfirst }} →</span>
+            </a>
+          </li>
+          {% endfor %}
+            </ol>
+          </div>
+        </div>
+      </section>
+      {% if lesson.steps %}
+      <a class="btn btn-subtle theme-warning border border-subtle-warning mt-3" href="{% url 'course_management:step_detail' lesson.number 1 %}">
+        Начать урок <span aria-hidden="true">›</span>
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
